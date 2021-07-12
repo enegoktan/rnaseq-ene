@@ -1,6 +1,6 @@
 #!/bin/bash
 #SBATCH --ntasks 1
-#SBATCH --time 2:0:0
+#SBATCH --time 0:20:0
 #SBATCH -e /rds/projects/t/thomaspz-fa-rna-seq/Ene/project/outputs/extract.err.txt
 #SBATCH --qos bbdefault
 #SBATCH --mail-type ALL

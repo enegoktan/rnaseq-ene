@@ -9,7 +9,7 @@ set -e
 
 module purge; module load bluebear
 
-cd /rds/projects/t/thomaspz-fa-rna-seq/Ene/colli
+cd /rds/projects/t/thomaspz-fa-rna-seq/Ene/project/colli
 
 #!/usr/bin/env bash
 curl -L ftp://ftp.sra.ebi.ac.uk/vol1/fastq/SRR599/001/SRR5998591/SRR5998591_1.fastq.gz -o SRR5998591_GSM2769686_Ctrl_4h_1_Homo_sapiens_RNA-Seq_1.fastq.gz

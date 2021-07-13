@@ -18,21 +18,19 @@ module load MultiQC/1.5-iomkl-2018a-Python-3.6.3
 # Checking quality
 
 #cd /../.. go to the location of your dataset that will be processed
-cd /rds/projects/t/thomaspz-fa-rna-seq/Ene/data/colli/dataset/control
+cd /rds/projects/t/thomaspz-fa-rna-seq/Ene/data/diedisheim/dataset/control
 
 # mkdir a directory for the output of analysis, if not already present
 # file needs to be unzipped before it can be processed
-fastqc SRR9589954_GSM3902469_RNA-seq_Experiment_1_-_control_condition_2h_Homo_sapiens_RNA-Seq_1.fastq  -o /rds/projects/t/thomaspz-fa-rna-seq/Ene/data/colli/1.fastQC_results
+fastqc SRR5998588_GSM2769683_Ctrl_0h_1_Homo_sapiens_RNA-Seq_1.fastq  -o /rds/projects/t/thomaspz-fa-rna-seq/Ene/data/diedisheim/1.fastQC_results
 
 
 # You can put this on a for loop in bash to repeat for each file in the folder
 
-# The # sign in front of a line in a script makes the line invisible to the BlueBear. The line is ignored.
-
 #for file in *.fastq
 #do
-#fastqc ${file}  -o /rds/projects/a/akermani-cpd/ildem/fastqc_results
+#fastqc ${file}  -o /rds/projects/t/thomaspz-fa-rna-seq/Ene/data/diedisheim/1.fastQC_results
 
 #multiqc can make a summary of all fastQC results in a folder. just go to the folder and run the command.
-#cd -o /rds/projects/a/akermani-cpd/ildem/fastqc_results
+#cd -o /rds/projects/t/thomaspz-fa-rna-seq/Ene/data/diedisheim/1.fastQC_results
 #multiqc

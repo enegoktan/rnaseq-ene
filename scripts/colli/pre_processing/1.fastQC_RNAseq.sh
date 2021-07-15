@@ -1,34 +1,32 @@
 #!/bin/bash
 #SBATCH --nodes 1
-#SBATCH --ntasks 4     # Number of nodes. Ensure that all cores are on one machine
-#SBATCH --time 0-01:0  # Runtime in D-HH:MM
+#SBATCH --ntasks 1     # Number of nodes. Ensure that all cores are on one machine
+#SBATCH --time 0-04:0  # Runtime in D-HH:MM
 #SBATCH -o /rds/projects/t/thomaspz-fa-rna-seq/Ene/data/slurm_outputs/slurm_out/1.fastQC_RNAseq/fastQC_%j.out.txt      # File to which STDOUT will be written
 #SBATCH -e /rds/projects/t/thomaspz-fa-rna-seq/Ene/data/slurm_outputs/slurm_errors/1.fastQC_RNAseq/fastQC_%j.err.txt   # File to which STDERR will be written
 #SBATCH --qos bbdefault
 #SBATCH --mail-type ALL
 
 
-#Load modules
+# Load modules
 module purge; module load bluebear
-#module load bear-apps/2018a
 module load FastQC/0.11.9-Java-11
 module load MultiQC/1.9-foss-2019b-Python-3.7.4
 
 # Checking quality
 
-#cd /../.. go to the location of your dataset that will be processed
+#go to the location of your dataset that will be processed
 cd /rds/projects/t/thomaspz-fa-rna-seq/Ene/data/colli/dataset/control
 
-#for individual file
-#fastqc SRR9589954_GSM3902469_RNA-seq_Experiment_1_-_control_condition_2h_Homo_sapiens_RNA-Seq_1.fastq  -o /rds/projects/t/thomaspz-fa-rna-seq/Ene/data/colli/1.fastQC_results
+gunzip *
 
-# You can put this on a for loop in bash to repeat for each file in the folder
-for file in *.fastq.gz
+# loop in bash to repeat for each file in the folder
+for file in *.fastq
 do
-  gunzip ${file}
   fastqc ${file} -o /rds/projects/t/thomaspz-fa-rna-seq/Ene/data/colli/1.fastQC_results
-  gzip ${file}
 done
+
+gzip *
 
 #multiqc can make a summary of all fastQC results in a folder. just go to the folder and run the command.
 #cd -o /rds/projects/t/thomaspz-fa-rna-seq/Ene/data/colli/1.fastQC_results

@@ -10,26 +10,25 @@
 
 #Load modules
 module purge; module load bluebear
-module load bear-apps/2018a
-module load FastQC/0.11.5-Java-1.8.0_74
-module load MultiQC/1.5-iomkl-2018a-Python-3.6.3
-
+#module load bear-apps/2018a
+module load FastQC/0.11.9-Java-11
+module load MultiQC/1.9-foss-2019b-Python-3.7.4
 
 # Checking quality
 
 #cd /../.. go to the location of your dataset that will be processed
 cd /rds/projects/t/thomaspz-fa-rna-seq/Ene/data/colli/dataset/control
 
-# mkdir a directory for the output of analysis, if not already present
-# file needs to be unzipped before it can be processed
-fastqc SRR9589954_GSM3902469_RNA-seq_Experiment_1_-_control_condition_2h_Homo_sapiens_RNA-Seq_1.fastq  -o /rds/projects/t/thomaspz-fa-rna-seq/Ene/data/colli/1.fastQC_results
-
+#for individual file
+#fastqc SRR9589954_GSM3902469_RNA-seq_Experiment_1_-_control_condition_2h_Homo_sapiens_RNA-Seq_1.fastq  -o /rds/projects/t/thomaspz-fa-rna-seq/Ene/data/colli/1.fastQC_results
 
 # You can put this on a for loop in bash to repeat for each file in the folder
-
-#for file in *.fastq
-#do
-#fastqc ${file}  -o /rds/projects/t/thomaspz-fa-rna-seq/Ene/data/colli/1.fastQC_results
+for file in *.fastq.gz
+do
+  gunzip ${file}
+  fastqc ${file} -o /rds/projects/t/thomaspz-fa-rna-seq/Ene/data/colli/1.fastQC_results
+  gzip ${file}
+done
 
 #multiqc can make a summary of all fastQC results in a folder. just go to the folder and run the command.
 #cd -o /rds/projects/t/thomaspz-fa-rna-seq/Ene/data/colli/1.fastQC_results

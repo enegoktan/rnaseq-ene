@@ -1,7 +1,7 @@
 #!/bin/bash
 #SBATCH --nodes 1
 #SBATCH --ntasks 1     # Number of nodes. Ensure that all cores are on one machine
-#SBATCH --time 0-04:0  # Runtime in D-HH:MM
+#SBATCH --time 0-06:0  # Runtime in D-HH:MM
 #SBATCH -o /rds/projects/t/thomaspz-fa-rna-seq/Ene/data/slurm_outputs/slurm_out/1.fastQC_RNAseq/fastQC_%j.out.txt      # File to which STDOUT will be written
 #SBATCH -e /rds/projects/t/thomaspz-fa-rna-seq/Ene/data/slurm_outputs/slurm_errors/1.fastQC_RNAseq/fastQC_%j.err.txt   # File to which STDERR will be written
 #SBATCH --qos bbdefault

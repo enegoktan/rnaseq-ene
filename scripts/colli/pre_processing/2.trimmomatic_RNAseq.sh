@@ -7,24 +7,43 @@
 
 
 module purge; module load bluebear
-module load apps/trimmomatic/v0.32
-module load bear-apps/2018a
-module load FastQC/0.11.5-Java-1.8.0_74
-module load MultiQC/1.5-iomkl-2018a-Python-3.6.3
+module load Trimmomatic/0.39-Java-11
+module load FastQC/0.11.9-Java-11
+module load MultiQC/1.9-foss-2019b-Python-3.7.4
 
-
-# Trimming test.fastq
 
 # Trim in two steps - first take off the adapters, then take off the polyA and the quality.
-cd /rds/projects/t/thomaspz-fa-rna-seq/Ene/data/colli/dataset/control
+cd /rds/projects/t/thomaspz-fa-rna-seq/Ene/data/colli/dataset/test_trim
 
-for file in *.fastq.gz
+# Clip adapters
+sample=*RNA-Seq_1.fastq.gz
+
+for r1 in $sample
 do
-  java -jar ${TMATIC_ROOT}/trimmomatic-0.32.jar PE -trimlog Triming_LOG_trimmomatic1.fastq  -basein ${file}.gz -baseout temp.fastq ILLUMINACLIP:contaminant_list_polyA.fa:3:10:8:6 LEADING:3 TRAILING:3
-  java -jar ${TMATIC_ROOT}/trimmomatic-0.32.jar PE -trimlog Triming_LOG_Trimmomatic2.fastq  -basein temp.fastq -baseout ${file}trimTC.fastq ILLUMINACLIP:polyA.fa:3:10:8:6 SLIDINGWINDOW:4:15 MINLEN:30
+  r2=$r1
+	r2="${r1/RNA-Seq_1/RNA-Seq_TEMP}"
+  java -jar $EBROOTTRIMMOMATIC/trimmomatic-0.39.jar PE -trimlog Triming_LOG_trimmomatic1.fastq -basein $r1 -baseout $r2 ILLUMINACLIP:/rds/projects/t/thomaspz-fa-rna-seq/Ene/scripts_and_manuals/scripts/Additional_files/contaminant_list_polyA.fa:3:10:8:6 LEADING:3 TRAILING:3
 done
 
-#then test the trimmed and clipped file.
-#mkdir fastqc_results   # use to make a directory if you have not already
+# Clip polyA tails
+sample=*RNA-Seq_TEMP_1P*
 
-fastqc trimTC_test.fastq -o /rds/projects/a/akermani-cpd/ildem/fastqc_results
+for r1 in $sample
+do
+  r2=$r1
+	r2="${r1/RNA-Seq_TEMP_1P/RNA-Seq_trimmed}"
+  java -jar $EBROOTTRIMMOMATIC/trimmomatic-0.39.jar PE -trimlog Triming_LOG_Trimmomatic2.fastq -basein $r1 -baseout $r2 ILLUMINACLIP:/rds/projects/t/thomaspz-fa-rna-seq/Ene/scripts_and_manuals/scripts/Additional_files/polyA.fa:3:10:8:6 SLIDINGWINDOW:4:15 MINLEN:30
+done
+
+#java -jar $EBROOTTRIMMOMATIC/trimmomatic-0.39.jar PE -trimlog Triming_LOG_trimmomatic1.fastq  -basein ${file} -baseout ${file}temp.fastq ILLUMINACLIP:/rds/projects/t/thomaspz-fa-rna-seq/Ene/scripts_and_manuals/scripts/Additional_files/contaminant_list_polyA.fa:3:10:8:6 LEADING:3 TRAILING:3
+#java -jar $EBROOTTRIMMOMATIC/trimmomatic-0.39.jar PE -trimlog Triming_LOG_Trimmomatic2.fastq  temp_1P.fastq temp_2P.fastq -baseout trimTC${file} ILLUMINACLIP:/rds/projects/t/thomaspz-fa-rna-seq/Ene/scripts_and_manuals/scripts/Additional_files/polyA.fa:3:10:8:6 SLIDINGWINDOW:4:15 MINLEN:30
+
+#then test the trimmed and clipped file
+#gunzip *RNA-Seq_trimmed*
+
+#for file in *RNA-Seq_trimmed*
+#do
+#  fastqc ${file}  -o /rds/projects/t/thomaspz-fa-rna-seq/Ene/data/diedisheim/2.trimmed_fastQC
+#done
+
+#gzip *

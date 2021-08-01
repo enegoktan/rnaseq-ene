@@ -15,12 +15,11 @@ module load MultiQC/1.9-foss-2019b-Python-3.7.4
 
 # Trim in two steps - first take off the adapters, then take off the polyA and the quality
 
-# cd /rds/projects/t/thomaspz-fa-rna-seq/Ene/data/diedisheim/dataset/control/unprocessed
-cd /rds/projects/t/thomaspz-fa-rna-seq/Ene/data/diedisheim/dataset/control/2.processed_trimmomatic/TEMP
+cd /rds/projects/t/thomaspz-fa-rna-seq/Ene/data/diedisheim/dataset/control/unprocessed
 
 # Clip adapters
 
-#sample=*RNA-Seq_1.fastq.gz
+#sample=*RNA-Seq_1.fastq.gz - this didn't work, instead:
 
 # analyse files by sets of five - first five
 sample="SRR5998588_GSM2769683_Ctrl_0h_1_Homo_sapiens_RNA-Seq_1.fastq.gz SRR5998589_GSM2769684_Ctrl_0h_2_Homo_sapiens_RNA-Seq_1.fastq.gz SRR5998590_GSM2769685_Ctrl_0h_3_Homo_sapiens_RNA-Seq_1.fastq.gz SRR5998591_GSM2769686_Ctrl_4h_1_Homo_sapiens_RNA-Seq_1.fastq.gz SRR5998592_GSM2769687_Ctrl_4h_2_Homo_sapiens_RNA-Seq_1.fastq.gz"
@@ -38,7 +37,7 @@ done
 
 # Clip polyA tails
 
-#sample=*RNA-Seq_TEMP_1P*
+#sample=*RNA-Seq_TEMP_1P*, this didn't work, instead:
 
 # first five
 sample="SRR5998588_GSM2769683_Ctrl_0h_1_Homo_sapiens_RNA-Seq_TEMP_1P.fastq.gz SRR5998589_GSM2769684_Ctrl_0h_2_Homo_sapiens_RNA-Seq_TEMP_1P.fastq.gz SRR5998590_GSM2769685_Ctrl_0h_3_Homo_sapiens_RNA-Seq_TEMP_1P.fastq.gz SRR5998591_GSM2769686_Ctrl_4h_1_Homo_sapiens_RNA-Seq_TEMP_1P.fastq.gz SRR5998592_GSM2769687_Ctrl_4h_2_Homo_sapiens_RNA-Seq_TEMP_1P.fastq.gz"
@@ -54,18 +53,14 @@ do
   java -jar $EBROOTTRIMMOMATIC/trimmomatic-0.39.jar PE -trimlog Triming_LOG_Trimmomatic2.fastq -basein $r1 -baseout $r2 ILLUMINACLIP:/rds/projects/t/thomaspz-fa-rna-seq/Ene/scripts_and_manuals/scripts/Additional_files/polyA.fa:3:10:8:6 SLIDINGWINDOW:4:15 MINLEN:30
 done
 
-
-#mv *TEMP* /rds/projects/t/thomaspz-fa-rna-seq/Ene/data/diedisheim/dataset/control/2.processed_trimmomatic
-#mv *trimmed* /rds/projects/t/thomaspz-fa-rna-seq/Ene/data/diedisheim/dataset/control/2.processed_trimmomatic
+mv *TEMP* /rds/projects/t/thomaspz-fa-rna-seq/Ene/data/diedisheim/dataset/control/2.processed_trimmomatic/TEMP
+mv *trimmed* /rds/projects/t/thomaspz-fa-rna-seq/Ene/data/diedisheim/dataset/control/2.processed_trimmomatic
 
 cd /rds/projects/t/thomaspz-fa-rna-seq/Ene/data/diedisheim/dataset/control/2.processed_trimmomatic
 
 #then test the trimmed and clipped file
-gunzip *RNA-Seq_trimmed*
 
-for file in *RNA-Seq_trimmed*
+for file in *RNA-Seq_trimmed*P*
 do
   fastqc ${file}  -o /rds/projects/t/thomaspz-fa-rna-seq/Ene/data/diedisheim/2.trimmed_fastQC
 done
-
-gzip *

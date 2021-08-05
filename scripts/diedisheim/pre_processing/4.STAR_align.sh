@@ -1,7 +1,7 @@
 #!/bin/bash
 #SBATCH --nodes 1                   #Number of nodes. Ensure that all cores are on one machine  =1
 #SBATCH --ntasks 18                    #Number of CPUs For STAR choose 8-20.
-#SBATCH -t 0-10:30:30
+#SBATCH -t 0-04:00:00
 #SBATCH -o /rds/projects/t/thomaspz-fa-rna-seq/Ene/data/slurm_outputs/slurm_out/4.STAR_align/StarAlign_%j.out.txt      # File to which STDOUT will be written
 #SBATCH -e /rds/projects/t/thomaspz-fa-rna-seq/Ene/data/slurm_outputs/slurm_errors/4.STAR_align/StarAlign_%j.err.txt      # File to which STDERR will be written
 #SBATCH --qos bbdefault
@@ -20,7 +20,7 @@ cd /rds/projects/t/thomaspz-fa-rna-seq/Ene
 
 cd /rds/projects/t/thomaspz-fa-rna-seq/Ene/data/diedisheim/dataset/control/2.processed_trimmomatic
 
-gzip -d *fastq.gz
+#gzip -d *fastq.gz
 
 sample=*RNA-Seq_trimmed_1P.fastq
 

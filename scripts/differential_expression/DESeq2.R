@@ -56,6 +56,8 @@ colli_DESeqDataset <- DESeqDataSetFromMatrix(
 diedesheim_metadata <- data.frame(treatment_time = c(0, 0, 0, 4, 4, 4, 24, 24, 24, 72, 72, 72, 144, 144, 144),
                                   control = c(1, 2, 3, 1, 2, 3, 1, 2, 3, 1, 2, 3, 1, 2, 3))
 rownames(diedesheim_metadata) <- colnames(diedesheim_raw_counts)
+diedesheim_metadata$treatment_time <- factor(diedesheim_metadata$treatment_time)
+diedesheim_metadata$control <- factor(diedesheim_metadata$control)
 
 # convert diedesheim count data frame to matrix
 diedesheim_count_matrix <- as.matrix(diedesheim_raw_counts)

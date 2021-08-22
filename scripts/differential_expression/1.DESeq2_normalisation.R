@@ -6,19 +6,20 @@ setwd("/Users/enegoktan/Desktop/scripts_and_manuals/scripts/differential_express
 
 #import the raw counts to RStudio
 colli_raw_counts <- read.delim("/Users/enegoktan/Desktop/HTseq_counts_file_hg38_colli.txt", header = FALSE)
-diedesheim_raw_counts <- read.delim("/Users/enegoktan/Desktop/HTseq_counts_file_hg38_diedisheim.txt", header = FALSE)
+diedisheim_raw_counts <- read.delim("/Users/enegoktan/Desktop/HTseq_counts_file_hg38_diedisheim.txt", header = FALSE)
 camunas_soler_raw_counts <- read.csv("/Users/enegoktan/Desktop/genecountsFACS_all.csv", row.names = 1, stringsAsFactors = FALSE)
 
 #rename the columns
 names(colli_raw_counts) <- c("gene", "2h_1", "2h_2", "2h_3", "2h_4", "2h_5", "8h_1", "8h_2", "8h_3", "8h_4", "8h_5", "24h_1", "24h_2", "24h_3", "24h_4", "24h_5")
-names(diedesheim_raw_counts) <- c("gene", "0h_1", "0h_2", "0h_3", "4h_1", "4h_2", "4h_3", "24h_1", "24h_2", "24h_3", "72h_1", "72h_2", "72h_3", "144h_1", "144h_2", "144h_3")
+names(diedisheim_raw_counts) <- c("gene", "0h_1", "0h_2", "0h_3", "4h_1", "4h_2", "4h_3", "24h_1", "24h_2", "24h_3", "72h_1", "72h_2", "72h_3", "144h_1", "144h_2", "144h_3")
+
 
 #change the gene identifiers as columns headers
 rownames(colli_raw_counts) <- colli_raw_counts[,1]
 colli_raw_counts <- select(colli_raw_counts, -gene)
 
-rownames(diedesheim_raw_counts) <- diedesheim_raw_counts[,1]
-diedesheim_raw_counts <- select(diedesheim_raw_counts, -gene)
+rownames(diedisheim_raw_counts) <- diedisheim_raw_counts[,1]
+diedisheim_raw_counts <- select(diedisheim_raw_counts, -gene)
 
 ###using DEseq2 for normalisation###
 
@@ -71,44 +72,44 @@ colli_normalised_counts <- counts(colli_DESeqDataset, normalized = TRUE)
 write.csv(colli_normalised_counts, file="/Users/enegoktan/Desktop/data/colli_normalised_counts.csv", quote = F, row.names = T)
 
 
-##do the same for the Diedesheim dataset
+##do the same for the diedisheim dataset
 
 #create a metadata table (annotated), created a data frame
-diedesheim_metadata <- data.frame(treatment_time = c(0, 0, 0, 4, 4, 4, 24, 24, 24, 72, 72, 72, 144, 144, 144),
+diedisheim_metadata <- data.frame(treatment_time = c(0, 0, 0, 4, 4, 4, 24, 24, 24, 72, 72, 72, 144, 144, 144),
                                   control = c(1, 2, 3, 1, 2, 3, 1, 2, 3, 1, 2, 3, 1, 2, 3))
-rownames(diedesheim_metadata) <- colnames(diedesheim_raw_counts)
+rownames(diedisheim_metadata) <- colnames(diedisheim_raw_counts)
 
 #factor the variables
-diedesheim_metadata$treatment_time <- factor(diedesheim_metadata$treatment_time)
-diedesheim_metadata$control <- factor(diedesheim_metadata$control)
+diedisheim_metadata$treatment_time <- factor(diedisheim_metadata$treatment_time)
+diedisheim_metadata$control <- factor(diedisheim_metadata$control)
 
 #save the metadata to file
-write.csv(diedesheim_metadata, file="/Users/enegoktan/Desktop/data/diedesheim_metadata.csv", quote = F, row.names = T)
+write.csv(diedisheim_metadata, file="/Users/enegoktan/Desktop/data/diedisheim_metadata.csv", quote = F, row.names = T)
 
-#convert diedesheim count data frame to matrix
-diedesheim_count_matrix <- as.matrix(diedesheim_raw_counts)
+#convert diedisheim count data frame to matrix
+diedisheim_count_matrix <- as.matrix(diedisheim_raw_counts)
 
-#create DESeq2 object for diedesheim
-diedesheim_DESeqDataset <- DESeqDataSetFromMatrix(
-  countData = diedesheim_count_matrix,
-  colData = diedesheim_metadata,
+#create DESeq2 object for diedisheim
+diedisheim_DESeqDataset <- DESeqDataSetFromMatrix(
+  countData = diedisheim_count_matrix,
+  colData = diedisheim_metadata,
   design = ~ 1,
   tidy = FALSE,
 )
 
 #generate the normalised counts (median of ratios method)
 
-#generate size factors and apply to diedesheim_DESeqDataset
-diedesheim_DESeqDataset <- estimateSizeFactors(diedesheim_DESeqDataset)
+#generate size factors and apply to diedisheim_DESeqDataset
+diedisheim_DESeqDataset <- estimateSizeFactors(diedisheim_DESeqDataset)
 
 #look at the size factors
-sizeFactors(diedesheim_DESeqDataset)
+sizeFactors(diedisheim_DESeqDataset)
 
 #retrieve normalised counts
-diedesheim_normalised_counts <- counts(diedesheim_DESeqDataset, normalized = TRUE)
+diedisheim_normalised_counts <- counts(diedisheim_DESeqDataset, normalized = TRUE)
 
 #save normalised counts
-write.csv(diedesheim_normalised_counts, file="/Users/enegoktan/Desktop/data/diedesheim_normalised_counts.csv", quote = F, row.names = T)
+write.csv(diedisheim_normalised_counts, file="/Users/enegoktan/Desktop/data/diedisheim_normalised_counts.csv", quote = F, row.names = T)
 
 
 

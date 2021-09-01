@@ -72,6 +72,9 @@ colli_normalised_counts <- counts(colli_DESeqDataset, normalized = TRUE)
 write.csv(colli_normalised_counts, file="/Users/enegoktan/Desktop/data/colli_normalised_counts.csv", quote = F, row.names = T)
 
 
+
+
+
 ##do the same for the diedisheim dataset
 
 #create a metadata table (annotated), created a data frame

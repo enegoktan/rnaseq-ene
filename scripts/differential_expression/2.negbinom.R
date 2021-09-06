@@ -1,4 +1,5 @@
 library(ggplot2)
+library(dplyr)
 
 setwd("/Users/enegoktan/Desktop/scripts_and_manuals/scripts/differential_expression")
 
@@ -7,6 +8,8 @@ setwd("/Users/enegoktan/Desktop/scripts_and_manuals/scripts/differential_express
 #diedisheim_normalised_counts <- read.csv("/Users/enegoktan/Desktop/data/diedisheim_normalised_counts.csv", row.names = 1, check.names = FALSE)
 
 ###use global data, colli and diedesheim normalised counts first
+
+
 ##colli normalised counts
 
 #bar plot for colli, first plot one gene against all samples
@@ -87,7 +90,7 @@ diedisheim_mean_counts$mean <- apply(diedisheim_mean_counts, 1, mean)
 #create a df with only gene name and mean
 diedisheim_gene_names <- row.names(diedisheim_mean_counts)
 diedisheim_means <- diedisheim_mean_counts$mean
-diedisheim_gene_mean = data.frame(gene=diedisheim_gene_names, mean=colli_means)
+diedisheim_gene_mean = data.frame(gene=diedisheim_gene_names, mean=diedisheim_means)
 
 #loop through all the means and compare it with median
 #if mean larger than the median, write the name and the value
@@ -112,4 +115,88 @@ diedisheim_processed_gene_mean <- cbind(diedisheim_temp_gene_name, diedisheim_te
 
 #remove gene names for which the mean values are NA
 diedisheim_filtered_gene_mean <- diedisheim_processed_gene_mean[!unlist(lapply(diedisheim_processed_gene_mean[,2], is.null))]
+
+
+
+
+
+
+##merge the datasets with gene names and counts together in one
+
+#rename the gene name columns to the same thing, "gene_id", which is what outer join is going to be by
+colnames(colli_processed_gene_mean) <- c("gene_id", "colli_count")
+colnames(diedisheim_processed_gene_mean) <- c("gene_id", "diedisheim_count")
+
+#outer join as we want to keep nonmatching rows from both tables
+dataset_outer_join <- merge(colli_processed_gene_mean, diedisheim_processed_gene_mean, by = "gene_id", sort = FALSE, all = TRUE)
+
+##put the counts into a venn diagram of colli, colli AND diedisheim, and diedisheim
+
+library(limma)
+attach(dataset_outer_join)
+
+#new data type that will be used for the vennCounts function
+combined_numeric <- dataset_outer_join
+
+#make the values numerical instead of strings
+#change gene_id as row names
+#replace NULL with 0 for numerical comparison
+row.names(combined_numeric) <- combined_numeric$gene_id
+combined_numeric <- select(combined_numeric, -gene_id)
+combined_numeric[combined_numeric=='NULL'] <- 0
+
+#make a binary list with 1 for expression 0 for NULL (below median expression) for colli and diedisheim
+colli_binary <- vector("list", nrow(combined_numeric))
+
+j <- 1
+for (x in combined_numeric[,1]) { #colli_count row
+  if (x == 0) {
+    colli_binary[[j]] <- 0
+    j <- j + 1
+  } else {
+    colli_binary[[j]] <- 1
+    j <- j + 1
+  }
+}
+
+diedisheim_binary <- vector("list", nrow(combined_numeric)) 
+
+j <- 1
+for (x in combined_numeric[,2]) { #diedisheim_count row
+  if (x == 0) {
+    diedisheim_binary[[j]] <- 0
+    j <- j + 1
+  } else {
+    diedisheim_binary[[j]] <- 1
+    j <- j + 1
+  }
+}
+
+
+#combine the binary lists for colli and diedisheim in one, to be used in vennCounts
+combined_gene_names <- row.names(combined_numeric)
+binary_dataset <- cbind(colli_binary, diedisheim_binary)
+row.names(binary_dataset) <- combined_gene_names
+binary_dataset <- as.matrix(binary_dataset)
+
+str(binary_dataset)
+
+##########
+# for (x in binary_dataset[,1]) {
+#   x <- as.numeric(x)
+# }
+# 
+# for (x in binary_dataset[,2]) {
+#   x <- as.numeric(x)
+# }
+# 
+# binary_dataset <- as.numeric(binary_dataset)
+##########
+
+dataset_venncounts <- vennCounts(binary_dataset)
+
+
+
+
+
 

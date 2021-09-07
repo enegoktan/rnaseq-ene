@@ -4,19 +4,16 @@ library(dplyr)
 setwd("/Users/enegoktan/Desktop/scripts_and_manuals/scripts/differential_expression")
 
 #import the normalised counts
-#colli_normalised_counts <- read.csv("/Users/enegoktan/Desktop/data/colli_normalised_counts.csv", row.names = 1, check.names = FALSE)
-#diedisheim_normalised_counts <- read.csv("/Users/enegoktan/Desktop/data/diedisheim_normalised_counts.csv", row.names = 1, check.names = FALSE)
+#colli_normalised_counts <- read.csv(path/to/normalised_counts)
+#diedisheim_normalised_counts <- read.csv(path/to/normalised_counts)
 
-###use global data, colli and diedesheim normalised counts first
-
-
-##colli normalised counts
+#begin with the colli dataset
 
 #bar plot for colli, first plot one gene against all samples
 gene_3 <- colli_normalised_counts[3,]
 barplot(gene_3, main = "ENSG00000000419 against samples" , las=2, col = "lightblue")
 
-#histogram of all 
+#histogram of all genes against the samples, see negative binomial distribution
 hist(log(colli_normalised_counts),
      main = "Distribution of Normalised Counts in Colli")
 
@@ -39,7 +36,7 @@ colli_gene_names <- row.names(colli_mean_counts)
 colli_means <- colli_mean_counts$mean
 colli_gene_mean = data.frame(gene=colli_gene_names, mean=colli_means)
 
-#loop through all the means and compare it with median
+#loop through the means and compare it with median
 #if mean larger than the median, write the name and the value
 #else, write the name and keep the value as null
 colli_temp_gene_name <- vector("list", nrow(colli_gene_mean))
@@ -65,8 +62,7 @@ colli_filtered_gene_mean <- colli_processed_gene_mean[!unlist(lapply(colli_proce
 
 
 
-
-##diedisheim normalised counts
+#diedisheim dataset
 
 #plot one gene in a bar plot
 gene_3 <- diedisheim_normalised_counts[3,]
@@ -115,7 +111,6 @@ diedisheim_processed_gene_mean <- cbind(diedisheim_temp_gene_name, diedisheim_te
 
 #remove gene names for which the mean values are NA
 diedisheim_filtered_gene_mean <- diedisheim_processed_gene_mean[!unlist(lapply(diedisheim_processed_gene_mean[,2], is.null))]
-
 
 
 
@@ -179,24 +174,31 @@ binary_dataset <- cbind(colli_binary, diedisheim_binary)
 row.names(binary_dataset) <- combined_gene_names
 binary_dataset <- as.matrix(binary_dataset)
 
-str(binary_dataset)
 
-##########
-# for (x in binary_dataset[,1]) {
-#   x <- as.numeric(x)
-# }
-# 
-# for (x in binary_dataset[,2]) {
-#   x <- as.numeric(x)
-# }
-# 
-# binary_dataset <- as.numeric(binary_dataset)
-##########
+####Trish Venn diagram script
+library(ggplot2)
+library(dplyr)
+library(limma)
 
-dataset_venncounts <- vennCounts(binary_dataset)
+#read the data for the Venn diagrams 
+binary_datasets<-read.csv("Users/enegoktan/Desktop/data/binary_dataset.csv")
 
+##Venn diagram for those genes where the expression = 0
+attach(binary_datasets)
+Colli_zero<-(colli_binary==0)
+Diedsheim_zero<-(diedisheim_binary==0)
+c1<-cbind<-cbind(Colli_zero, Diedsheim_zero)
+a<- vennCounts(c1)
+a
+vennDiagram(a)
 
-
-
+##Venn diagram for those genes where the expression = 1
+attach(binary_datasets)
+Colli<-(colli_binary>=1)
+Diedsheim<-(diedisheim_binary>=1)
+c2<-cbind<-cbind(Colli, Diedsheim)
+b<- vennCounts(c2)
+b
+vennDiagram(b)
 
 

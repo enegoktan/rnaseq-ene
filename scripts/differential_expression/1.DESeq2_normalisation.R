@@ -13,24 +13,24 @@ camunas_soler_raw_counts <- read.csv("/Users/enegoktan/Desktop/genecountsFACS_al
 names(colli_raw_counts) <- c("gene", "2h_1", "2h_2", "2h_3", "2h_4", "2h_5", "8h_1", "8h_2", "8h_3", "8h_4", "8h_5", "24h_1", "24h_2", "24h_3", "24h_4", "24h_5")
 names(diedisheim_raw_counts) <- c("gene", "0h_1", "0h_2", "0h_3", "4h_1", "4h_2", "4h_3", "24h_1", "24h_2", "24h_3", "72h_1", "72h_2", "72h_3", "144h_1", "144h_2", "144h_3")
 
-
-#change the gene identifiers as columns headers
+#change the gene identifiers as columns headers and remove extra column
 rownames(colli_raw_counts) <- colli_raw_counts[,1]
 colli_raw_counts <- select(colli_raw_counts, -gene)
 
 rownames(diedisheim_raw_counts) <- diedisheim_raw_counts[,1]
 diedisheim_raw_counts <- select(diedisheim_raw_counts, -gene)
 
+
 ###using DEseq2 for normalisation###
 
-##start with Colli dataset
+#start with Colli dataset
 
-#create a metadata table (annotated), created a matrix, converted to data frame
+#create an annotated metadata table
 colli_metadata <- matrix(data = NA, nrow = length(colnames(colli_raw_counts)), ncol = 2)
 rownames(colli_metadata) <- colnames(colli_raw_counts)
 colnames(colli_metadata) <- c('treatment_time', 'control')
 
-#populate the data
+#populate the metadata
 #could be done in the future with a delimiter, look it up later
 colli_metadata[,1] <- c(2, 2, 2, 2, 2, 8, 8, 8, 8, 8, 24, 24, 24, 24, 24)
 colli_metadata[,2] <- c(1, 2, 3, 4, 5, 1, 2, 3, 4, 5, 1, 2, 3, 4, 5)
@@ -47,9 +47,9 @@ write.csv(colli_metadata, file="/Users/enegoktan/Desktop/data/colli_metadata.csv
 #convert colli count data frame to matrix
 colli_count_matrix <- as.matrix(colli_raw_counts)
 
-#https://hbctraining.github.io/DGE_workshop/lessons/02_DGE_count_normalization.html DESeq2 code from here
-
 #create a DESeq2 object
+##https://hbctraining.github.io/DGE_workshop/lessons/02_DGE_count_normalization.html DESeq2 code from here
+
 colli_DESeqDataset <- DESeqDataSetFromMatrix(
   countData = colli_count_matrix,
   colData = colli_metadata,
@@ -58,11 +58,8 @@ colli_DESeqDataset <- DESeqDataSetFromMatrix(
 )
 
 #generate the normalised counts (median of ratios method)
-
 #generate size factors and apply to colli_DESeqDataset
 colli_DESeqDataset <- estimateSizeFactors(colli_DESeqDataset)
-
-#look at the size factors
 sizeFactors(colli_DESeqDataset)
 
 #retrieve normalised counts
@@ -73,11 +70,9 @@ write.csv(colli_normalised_counts, file="/Users/enegoktan/Desktop/data/colli_nor
 
 
 
+#do the same for the diedisheim dataset
 
-
-##do the same for the diedisheim dataset
-
-#create a metadata table (annotated), created a data frame
+#create a metadata table
 diedisheim_metadata <- data.frame(treatment_time = c(0, 0, 0, 4, 4, 4, 24, 24, 24, 72, 72, 72, 144, 144, 144),
                                   control = c(1, 2, 3, 1, 2, 3, 1, 2, 3, 1, 2, 3, 1, 2, 3))
 rownames(diedisheim_metadata) <- colnames(diedisheim_raw_counts)
@@ -89,7 +84,6 @@ diedisheim_metadata$control <- factor(diedisheim_metadata$control)
 #save the metadata to file
 write.csv(diedisheim_metadata, file="/Users/enegoktan/Desktop/data/diedisheim_metadata.csv", quote = F, row.names = T)
 
-#convert diedisheim count data frame to matrix
 diedisheim_count_matrix <- as.matrix(diedisheim_raw_counts)
 
 #create DESeq2 object for diedisheim
@@ -101,11 +95,8 @@ diedisheim_DESeqDataset <- DESeqDataSetFromMatrix(
 )
 
 #generate the normalised counts (median of ratios method)
-
 #generate size factors and apply to diedisheim_DESeqDataset
 diedisheim_DESeqDataset <- estimateSizeFactors(diedisheim_DESeqDataset)
-
-#look at the size factors
 sizeFactors(diedisheim_DESeqDataset)
 
 #retrieve normalised counts
